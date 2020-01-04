@@ -203,6 +203,7 @@ struct Params {
     bool fLLMQAllowDummyCommitments;
     LLMQType llmqTypeChainLocks;
     LLMQType llmqTypeInstantSend{LLMQ_NONE};
+    unsigned int nColdGainParam[6];
 };
 } // namespace Consensus
 

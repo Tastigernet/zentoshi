@@ -387,6 +387,7 @@ libzentoshi_server_a_SOURCES = \
   rpc/misc.cpp \
   rpc/net.cpp \
   rpc/rawtransaction.cpp \
+  rpc/rpccold.cpp \
   rpc/rpcevo.cpp \
   rpc/rpcquorums.cpp \
   rpc/server.cpp \

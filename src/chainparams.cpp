@@ -206,6 +206,7 @@ public:
         consensus.nStakeMaxAge = 60 * 60 * 24 * 30;
         consensus.nModifierInterval = 60;
         consensus.nCoinbaseMaturity = 20;
+        consensus.nColdGainParams = { 12, 720, 500, 100000, 5 };      // minage, maxage, minamount, maxamount, % interest rate
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
@@ -361,6 +362,7 @@ public:
         consensus.nStakeMaxAge = 60 * 60 * 24 * 30;
         consensus.nModifierInterval = 60;
         consensus.nCoinbaseMaturity = 20;
+        consensus.nColdGainParams = { 12, 720, 500, 100000, 5 };      // minage, maxage, minamount, maxamount, % interest rate
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 1916; // 95% of 2016
@@ -513,6 +515,7 @@ public:
         consensus.nStakeMaxAge = 60 * 60 * 24 * 30;
         consensus.nModifierInterval = 60 * 20;
         consensus.nCoinbaseMaturity = 20;
+        consensus.nColdGainParams = { 12, 720, 500, 100000, 5 };      // minage, maxage, minamount, maxamount, % interest rate
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
         consensus.nRuleChangeActivationThreshold = 50;
