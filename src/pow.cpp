@@ -9,9 +9,9 @@
 #include <chain.h>
 #include <chainparams.h>
 #include <primitives/block.h>
-#include <timedata.h>
 #include <uint256.h>
 #include <util/system.h>
+#include <validation.h>
 
 const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfStake)
 {
@@ -121,8 +121,8 @@ unsigned int DualKGW3(const CBlockIndex* pindexLast, const Consensus::Params& pa
     //! better version of bitbreak bitsend
     const int nExpireStep = 180;
     const int nMinimalExpire = 15 * 60;
-    int64_t nNowTime = GetAdjustedTime();
-    if ((nNowTime - pindexLast->GetBlockTime()) > nMinimalExpire)
+    int64_t nNowTime = ::ChainActive().Tip()->nTime;
+    if ((nNowTime - pindexLast->GetBlockTime()) > nMinimalExpire && !fProofOfStake)
     {
         int nTempCounter = nNowTime - pindexLast->GetBlockTime();
         while (nTempCounter > 0) {
