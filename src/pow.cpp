@@ -9,6 +9,7 @@
 #include <chain.h>
 #include <chainparams.h>
 #include <primitives/block.h>
+#include <timedata.h>
 #include <uint256.h>
 #include <util/system.h>
 
@@ -33,6 +34,7 @@ unsigned int DualKGW3(const CBlockIndex* pindexLast, const Consensus::Params& pa
     double EventHorizonDeviation;
     double EventHorizonDeviationFast;
     double EventHorizonDeviationSlow;
+    static const int64_t Resolution = 20;
     static const int64_t Blocktime = fProofOfStake ? params.nPosTargetSpacing : params.nPowTargetSpacing;
     static const unsigned int timeDaySeconds = 86400;
     uint64_t pastSecondsMin = timeDaySeconds * 0.025;
@@ -80,7 +82,7 @@ unsigned int DualKGW3(const CBlockIndex* pindexLast, const Consensus::Params& pa
                 break;
             }
         }
-        if (BlockReading->pprev == NULL) {
+        if (BlockReading->pprev == nullptr) {
             assert(BlockReading);
             break;
         }
@@ -94,14 +96,17 @@ unsigned int DualKGW3(const CBlockIndex* pindexLast, const Consensus::Params& pa
         kgw_dual1 *= PastRateActualSeconds;
         kgw_dual1 /= PastRateTargetSeconds;
     }
-    int64_t nActualTime1 = GetLastBlockIndex(pindexLast, fProofOfStake)->GetBlockTime() -
-                           GetLastBlockIndex(pindexLast, fProofOfStake)->pprev->GetBlockTime();
-    int64_t nActualTimespanshort = nActualTime1;
 
-    if (nActualTime1 < 0) nActualTime1 = Blocktime;
-    if (nActualTime1 < Blocktime / 3) nActualTime1 = Blocktime / 3;
-    if (nActualTime1 > Blocktime * 3) nActualTime1 = Blocktime * 3;
-    kgw_dual2 *= nActualTime1;
+    int64_t nActualTime = GetLastBlockIndex(pindexLast, fProofOfStake)->GetBlockTime() -
+                          GetLastBlockIndex(pindexLast, fProofOfStake)->pprev->GetBlockTime();
+    int64_t nActualTimespanshort = nActualTime;
+    if (nActualTime < 0)
+        nActualTime = Blocktime;
+    if (nActualTime < Blocktime / Resolution)
+        nActualTime = Blocktime / Resolution;
+    if (nActualTime > Blocktime * Resolution)
+        nActualTime = Blocktime * Resolution;
+    kgw_dual2 *= nActualTime;
     kgw_dual2 /= Blocktime;
     arith_uint256 bnNew;
     bnNew = ((kgw_dual2 + kgw_dual1) / 2);
@@ -111,6 +116,21 @@ unsigned int DualKGW3(const CBlockIndex* pindexLast, const Consensus::Params& pa
         const int nLongShortNew2 = 100;
         bnNew = bnNew * nLongShortNew1;
         bnNew = bnNew / nLongShortNew2;
+    }
+
+    //! better version of bitbreak bitsend
+    const int nExpireStep = 180;
+    const int nMinimalExpire = 15 * 60;
+    int64_t nNowTime = GetAdjustedTime();
+    if ((nNowTime - pindexLast->GetBlockTime()) > nMinimalExpire)
+    {
+        int nTempCounter = nNowTime - pindexLast->GetBlockTime();
+        while (nTempCounter > 0) {
+           nTempCounter -= nExpireStep;
+           bnNew <<= 1;
+           LogPrintf("%s - %d %s\n", __func__, nTempCounter, bnNew.ToString().c_str());
+           if (bnNew > bnLimit) break;
+        }
     }
 
     if (bnNew > bnLimit) bnNew = bnLimit;
