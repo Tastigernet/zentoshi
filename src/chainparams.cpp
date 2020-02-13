@@ -357,7 +357,7 @@ public:
         consensus.nPowTargetSpacing = 60;
         consensus.nPosTargetSpacing = consensus.nPowTargetSpacing;
         consensus.nPosTargetTimespan = consensus.nPowTargetTimespan;
-        consensus.nStakeMinAge = 60 * 5;
+        consensus.nStakeMinAge = 60 * 30;
         consensus.nStakeMaxAge = 60 * 60 * 24 * 30;
         consensus.nModifierInterval = 60;
         consensus.nCoinbaseMaturity = 20;
@@ -421,10 +421,7 @@ public:
         m_assumed_chain_state_size = 0.5;
         nMaxReorganizationDepth = 100;
 
-        // genesis
-        uint32_t nTime = 1580367437;
-        uint32_t nNonce = 30981;
-        genesis = CreateGenesisBlock(nTime, nNonce, 0x1f00ffff, 1, 0 * COIN);
+        genesis = CreateGenesisBlock(1581621800, 10660, 0x1f00ffff, 1, 0 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,80);
